@@ -1,0 +1,48 @@
+package com.gaurav.product_service.service;
+
+import com.gaurav.product_service.dto.ProductRequest;
+import com.gaurav.product_service.dto.ProductResponse;
+import com.gaurav.product_service.model.Product;
+import com.gaurav.product_service.repository.ProductRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.ai.tool.annotation.Tool;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class ProductService {
+
+    private final ProductRepository productRepository;
+
+    @Tool(description = "Create a new product in the catalog")
+    public void createProduct(ProductRequest productRequest) {
+        Product product = Product.builder()
+                .name(productRequest.getName())
+                .description(productRequest.getDescription())
+                .price(productRequest.getPrice())
+                .build();
+
+        productRepository.save(product);
+        log.info("Product {} is saved", product.getId());
+    }
+
+    @Tool(description = "Retrieve all products from the catalog")
+    public List<ProductResponse> getAllProducts() {
+        List<Product> products = productRepository.findAll();
+
+        return products.stream().map(this::mapToProductResponse).toList();
+    }
+
+    private ProductResponse mapToProductResponse(Product product) {
+        return ProductResponse.builder()
+                .id(product.getId())
+                .name(product.getName())
+                .description(product.getDescription())
+                .price(product.getPrice())
+                .build();
+    }
+}
