@@ -1,5 +1,7 @@
 /Users/gaurav/Documents/spring-boot_microservice_project/order-service/src/main/java/com/gaurav/order_service/OrderServiceApplication.java
+/Users/gaurav/Documents/spring-boot_microservice_project/order-service/src/main/java/com/gaurav/order_service/config/WebClientConfig.java
 /Users/gaurav/Documents/spring-boot_microservice_project/order-service/src/main/java/com/gaurav/order_service/controller/OrderController.java
+/Users/gaurav/Documents/spring-boot_microservice_project/order-service/src/main/java/com/gaurav/order_service/dto/InventoryResponse.java
 /Users/gaurav/Documents/spring-boot_microservice_project/order-service/src/main/java/com/gaurav/order_service/dto/OrderLineItemsDto.java
 /Users/gaurav/Documents/spring-boot_microservice_project/order-service/src/main/java/com/gaurav/order_service/dto/OrderLineItemsResponse.java
 /Users/gaurav/Documents/spring-boot_microservice_project/order-service/src/main/java/com/gaurav/order_service/dto/OrderRequest.java

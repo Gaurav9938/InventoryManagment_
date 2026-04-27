@@ -1,17 +1,17 @@
 package com.gaurav.order_service.service;
 
-import com.gaurav.order_service.dto.OrderLineItemsDto;
-import com.gaurav.order_service.dto.OrderLineItemsResponse;
-import com.gaurav.order_service.dto.OrderRequest;
-import com.gaurav.order_service.dto.OrderResponse;
+import com.gaurav.order_service.dto.*;
 import com.gaurav.order_service.model.Order;
 import com.gaurav.order_service.model.OrderLineItems;
 import com.gaurav.order_service.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.tool.annotation.Tool;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClient;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,6 +21,10 @@ import java.util.UUID;
 public class OrderService {
 
     private final OrderRepository orderRepository;
+    private final WebClient.Builder webClientBuilder;
+
+    @Value("${inventory.service.url:http://localhost:8083}")
+    private String inventoryServiceUrl;
 
     @Tool(description = "Place a new order for one or more products")
     public void placeOrder(OrderRequest orderRequest) {
@@ -34,7 +38,26 @@ public class OrderService {
 
         order.setOrderLineItemsList(orderLineItems);
 
-        orderRepository.save(order);
+        List<String> skuCodes = order.getOrderLineItemsList().stream()
+                .map(OrderLineItems::getSkuCode)
+                .toList();
+
+        // Call Inventory Service, and place order if product is in stock
+        InventoryResponse[] inventoryResponseArray = webClientBuilder.build().get()
+                .uri(inventoryServiceUrl + "/api/inventory",
+                        uriBuilder -> uriBuilder.queryParam("skuCode", skuCodes).build())
+                .retrieve()
+                .bodyToMono(InventoryResponse[].class)
+                .block();
+
+        boolean allProductsInStock = Arrays.stream(inventoryResponseArray)
+                .allMatch(InventoryResponse::isInStock);
+
+        if (allProductsInStock && inventoryResponseArray.length == skuCodes.size()) {
+            orderRepository.save(order);
+        } else {
+            throw new IllegalArgumentException("Product is not in stock, please try again later");
+        }
     }
 
     @Tool(description = "Retrieve all placed orders from the system")
