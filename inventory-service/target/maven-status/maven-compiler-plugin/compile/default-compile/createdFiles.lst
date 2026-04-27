@@ -1,0 +1,7 @@
+com/gaurav/inventory_service/service/InventoryService.class
+com/gaurav/inventory_service/InventoryServiceApplication.class
+com/gaurav/inventory_service/dto/InventoryResponse$InventoryResponseBuilder.class
+com/gaurav/inventory_service/controller/InventoryController.class
+com/gaurav/inventory_service/model/Inventory.class
+com/gaurav/inventory_service/dto/InventoryResponse.class
+com/gaurav/inventory_service/repository/InventoryRepository.class
